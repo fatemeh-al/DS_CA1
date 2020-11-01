@@ -9,6 +9,13 @@ import (
 
 type myMessage string
 
+func recieveMessage(channel <-chan broker.Message){
+	// time.Sleep(60 * time.Second)
+	// for m := range channel {
+	// 	fmt.Printf("got message: %s\n", m)
+	// }
+}
+
 func main() {
 	var b broker.Broker
 
@@ -47,8 +54,9 @@ func main() {
 	}()
 
 	// read messages from subCh published on "ch1".
-	for m := range subCh {
-		fmt.Printf("got message: %s\n", m)
-	}
+	// for m := range subCh {
+	// 	fmt.Printf("got message: %s\n", m)
+	// }
+	recieveMessage(subCh)
 
 }

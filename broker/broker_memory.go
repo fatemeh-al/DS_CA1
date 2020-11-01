@@ -15,7 +15,7 @@ func NewMemoryBroker() *memoryBroker {
 }
 
 func (b *memoryBroker) Subscribe(channel string) (<-chan Message, error) {
-	ch := make(chan Message, 100)
+	ch := make(chan Message, 3)
 	b.chans[channel] = ch
 	return ch, nil
 }
@@ -35,8 +35,11 @@ func (b *memoryBroker) Publish(channel string, m Message) error {
 	if !ok {
 		return errors.Errorf("cannot find channel %s", channel)
 	}
-	ch <- m
-	return nil
+	if len(ch) < 3 {
+		ch <- m
+		return nil
+	}
+	return nil;
 }
 
 func (b *memoryBroker) Close() error {
