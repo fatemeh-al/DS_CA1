@@ -5,6 +5,7 @@ import (
 	"log"
 	"time"
 	"github.com/fatemeh-al/DS_CA1/broker"
+	"github.com/fatemeh-al/DS_CA1/client"
 )
 
 type myMessage string
@@ -18,6 +19,7 @@ func recieveMessage(channel <-chan broker.Message){
 
 func main() {
 	var b broker.Broker
+	var c *client.Client
 
 	// Trying the in-memory broker.
 	b = broker.NewMemoryBroker()
@@ -30,6 +32,7 @@ func main() {
 		log.Fatalln(err)
 	}
 
+	c = client.NewClient("ch1")
 	// start a publish loop
 	// publish a message every second.
 	go func() {
@@ -52,7 +55,8 @@ func main() {
 			}
 		}
 	}()
-
+	
+	c.recieveMessage()
 	// read messages from subCh published on "ch1".
 	// for m := range subCh {
 	// 	fmt.Printf("got message: %s\n", m)
