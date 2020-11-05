@@ -31,6 +31,7 @@ func main() {
 	channel, err := b.CreateChannel("ch1")
 	c1 = client.NewClient("ch1", b)
 	c2 = client.NewClient("ch1", b)
+	
 	if err != nil {
 		log.Fatalln(err)
 	}
