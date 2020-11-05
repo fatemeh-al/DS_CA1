@@ -20,6 +20,11 @@ func (b *memoryBroker) CreateChannel(channel string) (<-chan Message, error) {
 	return ch, nil
 }
 
+func (b *memoryBroker) Subscribe(channel string) (<-chan Message, error) {
+	ch := b.chans[channel]
+	return ch, nil
+}
+
 func (b *memoryBroker) DeleteChannel(channel string) error {
 	ch, ok := b.chans[channel]
 	if !ok {

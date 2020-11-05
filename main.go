@@ -5,13 +5,12 @@ import (
 	"log"
 	"time"
 	"github.com/fatemeh-al/DS_CA1/broker"
-	// "github.com/fatemeh-al/DS_CA1/client"
 )
 
 type myMessage string
 
 func recieveMessage(channel <-chan broker.Message){
-	time.Sleep(10 * time.Second)
+	time.Sleep(6 * time.Second)
 	for m := range channel {
 		fmt.Printf("got message: %s\n", m)
 		break
@@ -27,15 +26,14 @@ func main() {
 
 	// subCh is a readony channel that we will
 	// receive messages published on "ch1".
-	subCh, err := b.Subscribe("ch1")
-	secSubCh, secErr := b.Subscribe("ch1")
+	channel, err := b.CreateChannel("ch1")
+	subscribedChannel, err2 := b.Subscribe("ch1")
 	if err != nil {
 		log.Fatalln(err)
 	}
-	if secErr != nil {
-		log.Fatalln(secErr)
+	if err2 != nil {
+		log.Fatalln(err2)
 	}
-
 	go func() {
 		defer b.Close()
 
@@ -48,13 +46,13 @@ func main() {
 
 			time.Sleep(time.Second)
 			if i == 5 {
-				if err := b.Unsubscribe("ch1"); err != nil {
+				if err := b.DeleteChannel("ch1"); err != nil {
 					log.Fatalln(err)
 				}
 				return
 			}
 		}
 	}()
-	recieveMessage(secSubCh)
-	recieveMessage(subCh)
+	recieveMessage(channel)
+	recieveMessage(subscribedChannel)
 }
