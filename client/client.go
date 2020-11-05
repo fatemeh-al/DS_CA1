@@ -9,28 +9,25 @@ import (
 
 type Client struct{
 	channelName string
+	b broker.Broker
 }
 
-func NewClient(channelName string) *Client{
-	return &Client{channelName: channelName}
+func NewClient(channelName string, b broker.Broker) *Client{
+	return &Client{channelName: channelName, b:b}
 }
 
-func (c *Client) recieveMessage() {
-	var b broker.Broker
-
-	// Trying the in-memory broker.
-	b = broker.NewMemoryBroker()
-	// b = broker.NewRedisBroker()
+func (c *Client) RecieveMessage() {
 
 	// subCh is a readony channel that we will
 	// receive messages published on "ch1".
-	subCh, err := b.Subscribe(c.channelName)
+	subCh, err := c.b.Subscribe(c.channelName)
 	if err != nil {
 		log.Fatalln(err)
 	}
 
-	time.Sleep(10 * time.Second)
+	time.Sleep(3 * time.Second)
 	for m := range subCh {
 		fmt.Printf("got message: %s\n", m)
+		break
 	}
 }

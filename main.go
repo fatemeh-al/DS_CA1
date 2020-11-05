@@ -5,12 +5,13 @@ import (
 	"log"
 	"time"
 	"github.com/fatemeh-al/DS_CA1/broker"
+	"github.com/fatemeh-al/DS_CA1/client"
 )
 
 type myMessage string
 
 func recieveMessage(channel <-chan broker.Message){
-	time.Sleep(6 * time.Second)
+	time.Sleep(3 * time.Second)
 	for m := range channel {
 		fmt.Printf("got message: %s\n", m)
 		break
@@ -19,21 +20,21 @@ func recieveMessage(channel <-chan broker.Message){
 
 func main() {
 	var b broker.Broker
+	var c1 *client.Client
+	var c2 *client.Client
 
 	// Trying the in-memory broker.
 	b = broker.NewMemoryBroker()
-	// b = broker.NewRedisBroker()
-
+	
 	// subCh is a readony channel that we will
 	// receive messages published on "ch1".
 	channel, err := b.CreateChannel("ch1")
-	subscribedChannel, err2 := b.Subscribe("ch1")
+	c1 = client.NewClient("ch1", b)
+	c2 = client.NewClient("ch1", b)
 	if err != nil {
 		log.Fatalln(err)
 	}
-	if err2 != nil {
-		log.Fatalln(err2)
-	}
+
 	go func() {
 		defer b.Close()
 
@@ -53,6 +54,7 @@ func main() {
 			}
 		}
 	}()
+	c1.RecieveMessage()
+	c2.RecieveMessage()
 	recieveMessage(channel)
-	recieveMessage(subscribedChannel)
 }
