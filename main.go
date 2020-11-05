@@ -5,21 +5,21 @@ import (
 	"log"
 	"time"
 	"github.com/fatemeh-al/DS_CA1/broker"
-	"github.com/fatemeh-al/DS_CA1/client"
+	// "github.com/fatemeh-al/DS_CA1/client"
 )
 
 type myMessage string
 
 func recieveMessage(channel <-chan broker.Message){
-	// time.Sleep(60 * time.Second)
-	// for m := range channel {
-	// 	fmt.Printf("got message: %s\n", m)
-	// }
+	time.Sleep(10 * time.Second)
+	for m := range channel {
+		fmt.Printf("got message: %s\n", m)
+		break
+	}
 }
 
 func main() {
 	var b broker.Broker
-	var c *client.Client
 
 	// Trying the in-memory broker.
 	b = broker.NewMemoryBroker()
@@ -28,13 +28,14 @@ func main() {
 	// subCh is a readony channel that we will
 	// receive messages published on "ch1".
 	subCh, err := b.Subscribe("ch1")
+	secSubCh, secErr := b.Subscribe("ch1")
 	if err != nil {
 		log.Fatalln(err)
 	}
+	if secErr != nil {
+		log.Fatalln(secErr)
+	}
 
-	c = client.NewClient("ch1")
-	// start a publish loop
-	// publish a message every second.
 	go func() {
 		defer b.Close()
 
@@ -46,7 +47,6 @@ func main() {
 			}
 
 			time.Sleep(time.Second)
-			// stop after 5 iterations.
 			if i == 5 {
 				if err := b.Unsubscribe("ch1"); err != nil {
 					log.Fatalln(err)
@@ -55,12 +55,6 @@ func main() {
 			}
 		}
 	}()
-	
-	c.recieveMessage()
-	// read messages from subCh published on "ch1".
-	// for m := range subCh {
-	// 	fmt.Printf("got message: %s\n", m)
-	// }
+	recieveMessage(secSubCh)
 	recieveMessage(subCh)
-
 }
